@@ -30,8 +30,10 @@ public class AuthTest {
                 .statusCode(200);
     }
 
+
     @Test
     void shouldTruePath(){
+
         System.out.println("OK");
     }
 }
