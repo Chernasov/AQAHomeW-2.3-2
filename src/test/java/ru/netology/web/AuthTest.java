@@ -1,39 +1,37 @@
 package ru.netology.web;
 
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.web.domain.RegistrationDate;
+import ru.netology.web.generator.DataGenerator;
 
-import static io.restassured.RestAssured.given;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selenide.*;
+//import static com.codeborne.selenide.Selenide.open;
 
 public class AuthTest {
-    private static RequestSpecification requestSpec = new RequestSpecBuilder()
-            .setBaseUri("http://localhost")
-            .setPort(9999)
-            .setAccept(ContentType.JSON)
-            .setContentType(ContentType.JSON)
-            .log(LogDetail.ALL)
-            .build();
 
-    @BeforeAll
-    static void setUpAll() {
-        given()
-                .spec(requestSpec)
-                .body(new RegistrationDate("vasya", "password", "active"))
-            .when()
-                .post("/api/system/users")
-            .then()
-                .statusCode(200);
+
+    @BeforeEach
+    void setUpPage() {
+        open("http://localhost:9999/");
     }
 
+    @Test
+    void shouldTruePath() {
+        DataGenerator user = new DataGenerator();
+        RegistrationDate activeUser = user.setActiveUser();
+        $("[data-test-id='login'] input").sendKeys(activeUser.getLogin());
+        $("[data-test-id='password'] input").sendKeys(activeUser.getPassword());
+        $("[data-test-id='action-login']").click();
+        $(byText("Личный кабинет")).shouldBe(visible);
+    }
 
     @Test
-    void shouldTruePath(){
-
-        System.out.println("OK");
+    void shouldUseBlockedUser() {
+        DataGenerator user = new DataGenerator();
+        RegistrationDate blockedUser = user.setBlockedUser();
+        System.out.println("Block OK");
     }
 }
