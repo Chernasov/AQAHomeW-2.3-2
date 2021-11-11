@@ -32,6 +32,10 @@ public class AuthTest {
     void shouldUseBlockedUser() {
         DataGenerator user = new DataGenerator();
         RegistrationDate blockedUser = user.setBlockedUser();
-        System.out.println("Block OK");
+        $("[data-test-id='login'] input").sendKeys(blockedUser.getLogin());
+        $("[data-test-id='password'] input").sendKeys(blockedUser.getPassword());
+        $("[data-test-id='action-login']").click();
+        $("[data-test-id='error-notification'] .notification__content")
+                .shouldBe(visible).shouldHave(text("Пользователь заблокирован"));
     }
 }
